@@ -19,6 +19,7 @@ async function init() {
   const images = await getUniqueBirdImages();
   const cards = createMixedPairs(images);
   fillCells(cells, cards);
+  addFlipListeners(cells);
 }
 
 
@@ -72,10 +73,26 @@ function createGrid(container) {
 
 function fillCells(gridCells, cards) {
   gridCells.forEach((cell, index) => {
+    const front = document.createElement('div');
+    front.classList.add('card-front');
+
     const img = document.createElement('img');
     img.src = cards[index];
     img.alt = 'Bird';
-    cell.append(img);
+    front.append(img);
+
+    const back = document.createElement('div');
+    back.classList.add('card-back');
+
+    cell.append(front, back);
+  });
+}
+
+function addFlipListeners(gridCells) {
+  gridCells.forEach((cell) => {
+    cell.addEventListener('click', () => {
+      cell.classList.toggle('flipped');
+    });
   });
 }
 
