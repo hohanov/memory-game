@@ -47,6 +47,11 @@ footer {
   transform: perspective(800px) rotateY(180deg);
 }
 
+main.locked .cell {
+  pointer-events: none;
+  cursor: auto;
+}
+
 .card-front,
 .card-back {
   position: absolute;
@@ -57,6 +62,8 @@ footer {
 }
 
 .card-front {
+  pointer-events: none;
+  cursor: auto;
   transform: rotateY(180deg);
   background-color: #cccccc;
 }

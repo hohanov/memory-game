@@ -1,4 +1,8 @@
-let cells = [];
+let cells = [];       // массив HTMLDivElement
+let cards = [];       // массив 16 ссылок
+let openedCards = []; // массив индексов
+let foundCards = [];  // массив индексов
+let board = null;
 
 async function init() {
   const header = document.createElement('header');
@@ -14,10 +18,11 @@ async function init() {
   header.append(newGameButton, leaderboardButton);
   document.body.append(header, main, footer);
 
+  board = main;
   cells = createGrid(main);
 
-  const images = await getUniqueBirdImages();
-  const cards = createMixedPairs(images);
+  const images = await getUniqueBirdImages(); // массив 8 ссылок
+  cards = createMixedPairs(images);
   fillCells(cells, cards);
   addFlipListeners(cells);
 }
@@ -89,11 +94,48 @@ function fillCells(gridCells, cards) {
 }
 
 function addFlipListeners(gridCells) {
-  gridCells.forEach((cell) => {
+  gridCells.forEach((cell, index) => {
     cell.addEventListener('click', () => {
-      cell.classList.toggle('flipped');
+      openCard(index);
     });
   });
+}
+
+function openCard(index) {
+  console.log(index)
+  if (
+    openedCards.length === 2
+    || openedCards.includes(index)
+    || foundCards.includes(index)
+  ) {
+    return;
+  }
+
+  cells[index].classList.add('flipped');
+  openedCards.push(index);
+
+  if (openedCards.length === 2) {
+    board.classList.add('locked');
+    checkOpenedCards();
+  }
+}
+
+function checkOpenedCards() {
+  const [firstIndex, secondIndex] = openedCards;
+
+  if (cards[firstIndex] === cards[secondIndex]) {
+    foundCards.push(firstIndex, secondIndex);
+    openedCards = [];
+    board.classList.remove('locked');
+    return;
+  }
+
+  setTimeout(() => {
+    cells[firstIndex].classList.remove('flipped');
+    cells[secondIndex].classList.remove('flipped');
+    openedCards = [];
+    board.classList.remove('locked');
+  }, 1500);
 }
 
 init();
