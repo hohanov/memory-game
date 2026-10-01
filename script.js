@@ -18,29 +18,47 @@ async function init() {
   const leaderboardButton = document.createElement('button');
   leaderboardButton.textContent = 'Leaderboard';
 
+  newGameButton.addEventListener('click', startNewGame);
+  leaderboardButton.addEventListener('click', openLeaderboardModal);
+
   movesCounter = document.createElement('span');
   movesCounter.classList.add('moves');
-  movesCounter.textContent = `Moves: ${moves}`;
 
   pairsCounter = document.createElement('span');
   pairsCounter.classList.add('pairs');
-  pairsCounter.textContent = `Pairs: ${foundCards.length / 2}`;
 
   header.append(newGameButton, leaderboardButton);
   footer.append(movesCounter, pairsCounter);
   document.body.append(header, main, footer);
 
   board = main;
-  cells = createGrid(main);
+  startNewGame();
+}
 
-  const images = await getUniqueBirdImages(); // массив 8 ссылок
+function startNewGame() {
+  closeModal();
+
+  openedCards = [];
+  foundCards = [];
+  moves = 0;
+  updateCounters();
+
+  board.classList.remove('locked');
+  board.replaceChildren();
+  cells = createGrid(board);
+
+  const images = getUniqueBirdImages(); // массив 8 ссылок
   cards = createMixedPairs(images);
   fillCells(cells, cards);
   addFlipListeners(cells);
 }
 
+function updateCounters() {
+  movesCounter.textContent = `Moves: ${moves}`;
+  pairsCounter.textContent = `Pairs: ${foundCards.length / 2}`;
+}
 
-async function getUniqueBirdImages() {
+function getUniqueBirdImages() {
   const allImages = [];
 
   for (let currentIndex = 1; currentIndex <= 33; currentIndex++) {
@@ -136,22 +154,48 @@ function checkOpenedCards() {
   const [firstIndex, secondIndex] = openedCards;
 
   moves++;
-  movesCounter.textContent = `Moves: ${moves}`;
 
   if (cards[firstIndex] === cards[secondIndex]) {
     foundCards.push(firstIndex, secondIndex);
-    pairsCounter.textContent = `Pairs: ${foundCards.length / 2}`;
+    updateCounters();
     openedCards = [];
     board.classList.remove('locked');
+
+    if (foundCards.length === cards.length) {
+      finishGame();
+    }
     return;
   }
 
+  updateCounters();
   setTimeout(() => {
     cells[firstIndex].classList.remove('flipped');
     cells[secondIndex].classList.remove('flipped');
     openedCards = [];
     board.classList.remove('locked');
   }, 1500);
+}
+
+function finishGame() {
+  openWinModal(moves);
+}
+
+function saveResult(movesCount) {
+}
+
+function openModal(...content) {
+}
+
+function closeModal() {
+}
+
+function openWinModal(movesCount) {
+}
+
+function openLeaderboardModal() {
+}
+
+function createLeaderboardTable(results) {
 }
 
 init();
