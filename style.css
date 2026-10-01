@@ -92,3 +92,38 @@ main.locked .cell {
     inset 0 0 0 2px #1d4e89,
     inset 0 0 0 4px #ffffff;
 }
+
+body.modal-open {
+  overflow: hidden;
+}
+
+.modal {
+  padding: 0;
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgb(0 0 0 / 0.3);
+}
+
+.modal::backdrop {
+  background-color: rgb(0 0 0 / 0.6);
+}
+
+.modal-body {
+  min-width: 280px;
+  padding: 24px;
+  text-align: center;
+}
+
+.modal-title {
+  margin: 0 0 16px;
+}
+
+.modal-text {
+  margin: 0 0 24px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}

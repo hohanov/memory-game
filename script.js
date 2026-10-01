@@ -6,6 +6,7 @@ let board = null;
 let moves = 0;
 let movesCounter = null;
 let pairsCounter = null;
+let activeModal = null;
 
 function createElement(tag, className, text) {
   const element = document.createElement(tag);
@@ -183,6 +184,7 @@ function checkOpenedCards() {
 }
 
 function finishGame() {
+  saveResult(moves);
   openWinModal(moves);
 }
 
@@ -190,12 +192,50 @@ function saveResult(movesCount) {
 }
 
 function openModal(...content) {
+  closeModal();
+
+  const dialog = createElement('dialog', 'modal');
+  const bodyModal = createElement('div', 'modal-body');
+  bodyModal.append(...content);
+  dialog.append(bodyModal);
+
+  dialog.addEventListener('click', (event) => {
+    if (event.target === dialog) {
+      closeModal();
+    }
+  });
+
+  dialog.addEventListener('close', () => {
+    dialog.remove();
+    if (activeModal === dialog) {
+      activeModal = null;
+      document.body.classList.remove('modal-open');
+    }
+  });
+
+  document.body.append(dialog);
+  document.body.classList.add('modal-open');
+  dialog.showModal();
+  activeModal = dialog;
 }
 
 function closeModal() {
+  if (activeModal) {
+    activeModal.close();
+  }
 }
 
 function openWinModal(movesCount) {
+  const title = createElement('h2', 'modal-title', 'You won!');
+  const text = createElement('p', 'modal-text', `Moves: ${movesCount}`);
+
+  const actions = createElement('div', 'modal-actions');
+  actions.append(
+    createButton('New Game', startNewGame),
+    createButton('Close', closeModal),
+  );
+
+  openModal(title, text, actions);
 }
 
 function openLeaderboardModal() {
