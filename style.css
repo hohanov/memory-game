@@ -15,6 +15,7 @@ body {
 header {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   height: var(--header-height);
   padding: 0 8px;
@@ -31,7 +32,12 @@ main {
 }
 
 footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
   height: var(--footer-height);
+  padding: 0 8px;
 }
 
 .cell {

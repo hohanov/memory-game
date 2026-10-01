@@ -3,6 +3,9 @@ let cards = [];       // массив 16 ссылок
 let openedCards = []; // массив индексов
 let foundCards = [];  // массив индексов
 let board = null;
+let moves = 0;
+let movesCounter = null;
+let pairsCounter = null;
 
 async function init() {
   const header = document.createElement('header');
@@ -15,7 +18,16 @@ async function init() {
   const leaderboardButton = document.createElement('button');
   leaderboardButton.textContent = 'Leaderboard';
 
+  movesCounter = document.createElement('span');
+  movesCounter.classList.add('moves');
+  movesCounter.textContent = `Moves: ${moves}`;
+
+  pairsCounter = document.createElement('span');
+  pairsCounter.classList.add('pairs');
+  pairsCounter.textContent = `Pairs: ${foundCards.length / 2}`;
+
   header.append(newGameButton, leaderboardButton);
+  footer.append(movesCounter, pairsCounter);
   document.body.append(header, main, footer);
 
   board = main;
@@ -123,8 +135,12 @@ function openCard(index) {
 function checkOpenedCards() {
   const [firstIndex, secondIndex] = openedCards;
 
+  moves++;
+  movesCounter.textContent = `Moves: ${moves}`;
+
   if (cards[firstIndex] === cards[secondIndex]) {
     foundCards.push(firstIndex, secondIndex);
+    pairsCounter.textContent = `Pairs: ${foundCards.length / 2}`;
     openedCards = [];
     board.classList.remove('locked');
     return;
