@@ -18,16 +18,20 @@ function createElement(tag, className, text) {
   return element;
 }
 
+function createButton(text, onClick) {
+  const button = createElement('button', null, text);
+  button.type = 'button';
+  button.addEventListener('click', onClick);
+  return button;
+}
+
 async function init() {
   const header = createElement('header');
   const main = createElement('main');
   const footer = createElement('footer');
 
-  const newGameButton = createElement('button', null, 'New Game');
-  const leaderboardButton = createElement('button', null, 'Leaderboard');
-
-  newGameButton.addEventListener('click', startNewGame);
-  leaderboardButton.addEventListener('click', openLeaderboardModal);
+  const newGameButton = createButton('New Game', startNewGame);
+  const leaderboardButton = createButton('Leaderboard', openLeaderboardModal);
 
   movesCounter = createElement('span', 'moves');
   pairsCounter = createElement('span', 'pairs');
