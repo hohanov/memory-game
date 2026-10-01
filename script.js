@@ -7,25 +7,30 @@ let moves = 0;
 let movesCounter = null;
 let pairsCounter = null;
 
+function createElement(tag, className, text) {
+  const element = document.createElement(tag);
+  if (className) {
+    element.classList.add(className);
+  }
+  if (text !== undefined) {
+    element.textContent = text;
+  }
+  return element;
+}
+
 async function init() {
-  const header = document.createElement('header');
-  const main = document.createElement('main');
-  const footer = document.createElement('footer');
+  const header = createElement('header');
+  const main = createElement('main');
+  const footer = createElement('footer');
 
-  const newGameButton = document.createElement('button');
-  newGameButton.textContent = 'New Game';
-
-  const leaderboardButton = document.createElement('button');
-  leaderboardButton.textContent = 'Leaderboard';
+  const newGameButton = createElement('button', null, 'New Game');
+  const leaderboardButton = createElement('button', null, 'Leaderboard');
 
   newGameButton.addEventListener('click', startNewGame);
   leaderboardButton.addEventListener('click', openLeaderboardModal);
 
-  movesCounter = document.createElement('span');
-  movesCounter.classList.add('moves');
-
-  pairsCounter = document.createElement('span');
-  pairsCounter.classList.add('pairs');
+  movesCounter = createElement('span', 'moves');
+  pairsCounter = createElement('span', 'pairs');
 
   header.append(newGameButton, leaderboardButton);
   footer.append(movesCounter, pairsCounter);
@@ -97,8 +102,7 @@ function createGrid(container) {
   const gridCells = [];
 
   for (let currentIndex = 0; currentIndex < 16; currentIndex++) {
-    const cell = document.createElement('div');
-    cell.classList.add('cell');
+    const cell = createElement('div', 'cell');
     container.append(cell);
     gridCells.push(cell);
   }
@@ -108,16 +112,14 @@ function createGrid(container) {
 
 function fillCells(gridCells, cards) {
   gridCells.forEach((cell, index) => {
-    const front = document.createElement('div');
-    front.classList.add('card-front');
+    const front = createElement('div', 'card-front');
 
-    const img = document.createElement('img');
+    const img = createElement('img');
     img.src = cards[index];
     img.alt = 'Bird';
     front.append(img);
 
-    const back = document.createElement('div');
-    back.classList.add('card-back');
+    const back = createElement('div', 'card-back');
 
     cell.append(front, back);
   });
