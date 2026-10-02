@@ -8,6 +8,14 @@ let movesCounter = null;
 let pairsCounter = null;
 let activeModal = null;
 
+const RESULTS_STORAGE_KEY = 'memory-game-results';
+
+const dateFormatter = new Intl.DateTimeFormat('ru-RU', {
+  day: '2-digit',
+  month: '2-digit',
+  year: 'numeric',
+});
+
 function createElement(tag, className, text) {
   const element = document.createElement(tag);
   if (className) {
@@ -188,7 +196,29 @@ function finishGame() {
   openWinModal(moves);
 }
 
+function loadResults() {
+  try {
+    const results = JSON.parse(localStorage.getItem(RESULTS_STORAGE_KEY));
+    return Array.isArray(results) ? results : [];
+  } catch {
+    return [];
+  }
+}
+
 function saveResult(movesCount) {
+  const results = loadResults();
+  results.push({ moves: movesCount, date: Date.now() });
+  results.sort((first, second) => first.moves - second.moves || first.date - second.date);
+
+  try {
+    localStorage.setItem(RESULTS_STORAGE_KEY, JSON.stringify(results.slice(0, 10)));
+  } catch {
+    return;
+  }
+}
+
+function formatDate(timestamp) {
+  return dateFormatter.format(timestamp);
 }
 
 function openModal(...content) {
@@ -239,9 +269,44 @@ function openWinModal(movesCount) {
 }
 
 function openLeaderboardModal() {
+  const title = createElement('h2', 'modal-title', 'Leaderboard');
+  const results = loadResults();
+
+  const content = results.length === 0
+    ? createElement('p', 'modal-text', 'No results yet')
+    : createLeaderboardTable(results);
+
+  const actions = createElement('div', 'modal-actions');
+  actions.append(createButton('Close', closeModal));
+
+  openModal(title, content, actions);
 }
 
 function createLeaderboardTable(results) {
+  const table = createElement('table', 'leaderboard');
+
+  const headRow = createElement('tr');
+  headRow.append(
+    createElement('th', null, 'Place'),
+    createElement('th', null, 'Moves'),
+    createElement('th', null, 'Date'),
+  );
+  const head = createElement('thead');
+  head.append(headRow);
+
+  const body = createElement('tbody');
+  results.forEach((result, index) => {
+    const row = createElement('tr');
+    row.append(
+      createElement('td', null, String(index + 1)),
+      createElement('td', null, String(result.moves)),
+      createElement('td', null, formatDate(result.date)),
+    );
+    body.append(row);
+  });
+
+  table.append(head, body);
+  return table;
 }
 
 init();

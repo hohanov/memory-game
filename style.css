@@ -127,3 +127,15 @@ body.modal-open {
   justify-content: center;
   gap: 8px;
 }
+
+.leaderboard {
+  width: 100%;
+  margin-bottom: 24px;
+  border-collapse: collapse;
+}
+
+.leaderboard th,
+.leaderboard td {
+  padding: 6px 12px;
+  border-bottom: 1px solid #dddddd;
+}
