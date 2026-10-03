@@ -8,6 +8,8 @@ let movesCounter = null;
 let pairsCounter = null;
 let activeModal = null;
 let flipBackTimeout = null;
+let newGameButton = null;
+let leaderboardButton = null;
 
 const RESULTS_STORAGE_KEY = 'memory-game-results';
 
@@ -35,13 +37,13 @@ function createButton(text, onClick) {
   return button;
 }
 
-async function init() {
+function init() {
   const header = createElement('header');
   const main = createElement('main');
   const footer = createElement('footer');
 
-  const newGameButton = createButton('New Game', startNewGame);
-  const leaderboardButton = createButton('Leaderboard', openLeaderboardModal);
+  newGameButton = createButton('New Game', startNewGame);
+  leaderboardButton = createButton('Leaderboard', openLeaderboardModal);
 
   movesCounter = createElement('span', 'moves');
   pairsCounter = createElement('span', 'pairs');
@@ -58,6 +60,29 @@ function startNewGame() {
   clearTimeout(flipBackTimeout);
   closeModal();
 
+  const flippedCells = cells.filter((cell) => cell.classList.contains('flipped'));
+
+  if (flippedCells.length === 0) {
+    resetGame();
+    return;
+  }
+
+  newGameButton.disabled = true;
+  leaderboardButton.disabled = true;
+  board.classList.add('locked');
+
+  flippedCells.forEach((cell) => {
+    cell.classList.remove('flipped');
+  });
+
+  setTimeout(() => {
+    newGameButton.disabled = false;
+    leaderboardButton.disabled = false;
+    resetGame();
+  }, 500);
+}
+
+function resetGame() {
   openedCards = [];
   foundCards = [];
   moves = 0;
@@ -149,7 +174,6 @@ function addFlipListeners(gridCells) {
 }
 
 function openCard(index) {
-  console.log(index)
   if (
     openedCards.length === 2
     || openedCards.includes(index)
@@ -188,14 +212,23 @@ function checkOpenedCards() {
   flipBackTimeout = setTimeout(() => {
     cells[firstIndex].classList.remove('flipped');
     cells[secondIndex].classList.remove('flipped');
-    openedCards = [];
-    board.classList.remove('locked');
+
+    flipBackTimeout = setTimeout(() => {
+      openedCards = [];
+      board.classList.remove('locked');
+    }, 500);
   }, 1500);
 }
 
 function finishGame() {
+  newGameButton.disabled = true;
+  leaderboardButton.disabled = true;
   saveResult(moves);
-  openWinModal(moves);
+  setTimeout(() => {
+    openWinModal(moves);
+    newGameButton.disabled = false;
+    leaderboardButton.disabled = false;
+  }, 500);
 }
 
 function loadResults() {

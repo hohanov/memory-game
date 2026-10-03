@@ -50,6 +50,8 @@ footer {
 }
 
 .cell.flipped {
+  pointer-events: none;
+  cursor: auto;
   transform: perspective(800px) rotateY(180deg);
 }
 
