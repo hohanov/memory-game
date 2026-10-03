@@ -7,6 +7,7 @@ let moves = 0;
 let movesCounter = null;
 let pairsCounter = null;
 let activeModal = null;
+let flipBackTimeout = null;
 
 const RESULTS_STORAGE_KEY = 'memory-game-results';
 
@@ -54,6 +55,7 @@ async function init() {
 }
 
 function startNewGame() {
+  clearTimeout(flipBackTimeout);
   closeModal();
 
   openedCards = [];
@@ -183,7 +185,7 @@ function checkOpenedCards() {
   }
 
   updateCounters();
-  setTimeout(() => {
+  flipBackTimeout = setTimeout(() => {
     cells[firstIndex].classList.remove('flipped');
     cells[secondIndex].classList.remove('flipped');
     openedCards = [];
