@@ -10,6 +10,12 @@ A browser memory game with bird photos: find all matching pairs of cards in as f
 - Each pair of flipped cards counts as one move.
 - The game ends when all 8 pairs are found.
 
+## Sound
+
+The game has sound effects for flipping a card, a match, a mismatch and a win. They are generated in the browser with the built-in Web Audio API — no audio files and no third-party libraries.
+
+Sound is off by default. Turn it on with the **Sound** button at the bottom of the screen.
+
 ## Running locally
 
 All you need is a modern browser.
