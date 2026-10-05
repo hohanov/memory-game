@@ -71,15 +71,18 @@ function startNewGame() {
   leaderboardButton.disabled = true;
   board.classList.add('locked');
 
-  flippedCells.forEach((cell) => {
-    cell.classList.remove('flipped');
+  flippedCells.forEach((cell, index) => {
+    setTimeout(() => {
+      cell.classList.remove('flipped');
+      playFlipSound();
+    }, index * 100);
   });
 
   setTimeout(() => {
     newGameButton.disabled = false;
     leaderboardButton.disabled = false;
     resetGame();
-  }, 500);
+  }, (flippedCells.length - 1) * 100 + 500);
 }
 
 function resetGame() {
