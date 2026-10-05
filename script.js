@@ -11,6 +11,10 @@ let flipBackTimeout = null;
 let newGameButton = null;
 let leaderboardButton = null;
 
+let soundButton = null;
+let audioContext = null;
+let soundEnabled = false;
+
 const RESULTS_STORAGE_KEY = 'memory-game-results';
 
 const dateFormatter = new Intl.DateTimeFormat('ru-RU', {
@@ -44,12 +48,14 @@ function init() {
 
   newGameButton = createButton('New Game', startNewGame);
   leaderboardButton = createButton('Leaderboard', openLeaderboardModal);
+  soundButton = createButton('', toggleSound);
+  updateSoundButton();
 
   movesCounter = createElement('span', 'moves');
   pairsCounter = createElement('span', 'pairs');
 
   header.append(newGameButton, leaderboardButton);
-  footer.append(movesCounter, pairsCounter);
+  footer.append(movesCounter, pairsCounter, soundButton);
   document.body.append(header, main, footer);
 
   board = main;
@@ -187,6 +193,7 @@ function openCard(index) {
 
   cells[index].classList.add('flipped');
   openedCards.push(index);
+  playFlipSound();
 
   if (openedCards.length === 2) {
     board.classList.add('locked');
@@ -207,14 +214,18 @@ function checkOpenedCards() {
 
     if (foundCards.length === cards.length) {
       finishGame();
+    } else {
+      playMatchSound();
     }
     return;
   }
 
   updateCounters();
+  playMismatchSound();
   flipBackTimeout = setTimeout(() => {
     cells[firstIndex].classList.remove('flipped');
     cells[secondIndex].classList.remove('flipped');
+    playFlipSound();
 
     flipBackTimeout = setTimeout(() => {
       openedCards = [];
@@ -226,12 +237,74 @@ function checkOpenedCards() {
 function finishGame() {
   newGameButton.disabled = true;
   leaderboardButton.disabled = true;
-  saveResult(moves);
   setTimeout(() => {
+    playWinSound();
+    saveResult(moves);
     openWinModal(moves);
     newGameButton.disabled = false;
     leaderboardButton.disabled = false;
   }, 500);
+}
+
+function playTone(frequency, duration, delay = 0, volume = 0.2) {
+  if (!soundEnabled) {
+    return;
+  }
+
+  const startTime = audioContext.currentTime + delay;
+  const oscillator = audioContext.createOscillator();
+  const gain = audioContext.createGain();
+
+  oscillator.type = 'triangle';
+  oscillator.frequency.value = frequency;
+  gain.gain.setValueAtTime(volume, startTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
+
+  oscillator.connect(gain);
+  gain.connect(audioContext.destination);
+  oscillator.start(startTime);
+  oscillator.stop(startTime + duration);
+}
+
+function playFlipSound() {
+  playTone(500, 0.05, 0, 0.05);
+}
+
+function playMatchSound() {
+  playTone(650, 0.15, 0.4);
+  playTone(900, 0.25, 0.5);
+}
+
+function playMismatchSound() {
+  playTone(222, 0.15, 0.5, 0.1);
+  playTone(175, 0.3, 0.6, 0.1);
+}
+
+function playWinSound() {
+  playTone(500, 0.15, 0.5);
+  playTone(650, 0.15, 0.65);
+  playTone(800, 0.15, 0.8);
+  playTone(1050, 0.5, 0.95);
+}
+
+function toggleSound() {
+  soundEnabled = !soundEnabled;
+  updateSoundButton();
+
+  if (!soundEnabled) {
+    return;
+  }
+
+  if (!audioContext) {
+    audioContext = new AudioContext();
+  }
+  if (audioContext.state === 'suspended') {
+    audioContext.resume();
+  }
+}
+
+function updateSoundButton() {
+  soundButton.textContent = soundEnabled ? 'Sound: On' : 'Sound: Off';
 }
 
 function loadResults() {
