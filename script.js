@@ -86,7 +86,6 @@ function resetGame() {
   openedCards = [];
   foundCards = [];
   moves = 0;
-  updateCounters();
 
   board.classList.remove('locked');
   board.replaceChildren();
@@ -94,13 +93,14 @@ function resetGame() {
 
   const images = getUniqueBirdImages(); // массив 8 ссылок
   cards = createMixedPairs(images);
+  updateCounters();
   fillCells(cells, cards);
   addFlipListeners(cells);
 }
 
 function updateCounters() {
   movesCounter.textContent = `Moves: ${moves}`;
-  pairsCounter.textContent = `Pairs: ${foundCards.length / 2}`;
+  pairsCounter.textContent = `Pairs: ${foundCards.length / 2} of ${cards.length / 2}`;
 }
 
 function getUniqueBirdImages() {
